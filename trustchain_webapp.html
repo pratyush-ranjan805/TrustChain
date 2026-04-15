@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TrustChain — Decentralized Escrow Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0A0C10;
+  --bg2: #0F1218;
+  --bg3: #141820;
+  --bg4: #1A2030;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --gold: #E8B84B;
+  --gold2: #F5C96A;
+  --gold-dim: rgba(232,184,75,0.12);
+  --gold-glow: rgba(232,184,75,0.25);
+  --blue: #3B82F6;
+  --blue2: #60A5FA;
+  --blue-dim: rgba(59,130,246,0.12);
+  --green: #10B981;
+  --green-dim: rgba(16,185,129,0.12);
+  --red: #EF4444;
+  --red-dim: rgba(239,68,68,0.12);
+  --amber: #F59E0B;
+  --amber-dim: rgba(245,158,11,0.12);
+  --purple: #8B5CF6;
+  --purple-dim: rgba(139,92,246,0.12);
+  --text: #F0F2F8;
+  --text2: #8892A4;
+  --text3: #5A6478;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --mono: 'DM Mono', monospace;
+  --sans: 'Syne', sans-serif;
+  --serif: 'Instrument Serif', serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 4px; }
+
+/* ── PAGE SYSTEM ── */
+.page { display: none; }
+.page.active { display: flex; }
+
+/* ═══════════════════════════════════════════
+   AUTH PAGES
+═══════════════════════════════════════════ */
+.auth-shell {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+}
+.auth-left {
+  flex: 1;
+  background: linear-gradient(135deg, #0A0C10 0%, #0F1420 50%, #080B18 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  position: relative;
+  overflow: hidden;
+}
+.auth-left::before {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(232,184,75,0.08) 0%, transparent 70%);
+  top: -100px; left: -100px;
+  pointer-events: none;
+}
+.auth-left::after {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%);
+  bottom: -80px; right: -80px;
+  pointer-events: none;
+}
+.auth-brand {
+  position: relative;
+  z-index: 1;
+  max-width: 420px;
+}
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 48px;
+}
+.auth-logo-icon {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--gold), #C8942A);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 30px var(--gold-glow);
+}
+.auth-logo-icon svg { width: 24px; height: 24px; fill: none; stroke: #0A0C10; stroke-width: 2.5; }
+.auth-logo-name {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+.auth-hero-title {
+  font-family: var(--serif);
+  font-size: 48px;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 20px;
+  font-style: italic;
+}
+.auth-hero-title span { color: var(--gold); font-style: normal; font-family: var(--sans); font-weight: 800; }
+.auth-hero-desc {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+.auth-features { display: flex; flex-direction: column; gap: 14px; }
+.auth-feat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text2);
+}
+.auth-feat-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+.auth-right {
+  width: 480px;
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 44px;
+  overflow-y: auto;
+}
+.auth-tab-row {
+  display: flex;
+  gap: 0;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+.auth-tab {
+  flex: 1;
+  padding: 12px 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.auth-tab.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+.auth-form { display: none; }
+.auth-form.active { display: block; }
+.auth-heading {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
+}
+.auth-subheading {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+.form-group { margin-bottom: 16px; }
+.form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 7px;
+}
+.form-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 11px 14px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+.form-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-dim);
+}
+.form-input::placeholder { color: var(--text3); }
+.form-input[readonly] { opacity: 0.5; cursor: not-allowed; }
+.role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
+.role-card {
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.role-card:hover { border-color: var(--gold); background: var(--gold-dim); }
+.role-card.active { border-color: var(--gold); background: var(--gold-dim); }
+.role-card-icon { font-size: 20px; margin-bottom: 6px; }
+.role-card-name { font-size: 12px; font-weight: 700; color: var(--text); letter-spacing: 0.3px; }
+.role-card-desc { font-size: 10px; color: var(--text3); margin-top: 2px; }
+.btn-auth {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, var(--gold), #C8942A);
+  color: #0A0C10;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+  box-shadow: 0 4px 20px var(--gold-glow);
+}
+.btn-auth:hover { transform: translateY(-1px); box-shadow: 0 8px 30px var(--gold-glow); }
+.btn-auth:active { transform: translateY(0); }
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  font-size: 11px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.auth-divider::before, .auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.demo-accounts { display: flex; flex-direction: column; gap: 8px; }
+.demo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.demo-row:hover { border-color: var(--border2); background: var(--bg4); }
+.demo-info { display: flex; align-items: center; gap: 10px; }
+.demo-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--bg4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: var(--gold);
+  border: 1px solid var(--border2);
+}
+.demo-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.demo-role-badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.demo-role-badge.client { background: var(--blue-dim); color: var(--blue2); }
+.demo-role-badge.freelancer { background: var(--green-dim); color: var(--green); }
+.demo-enter { font-size: 11px; color: var(--text3); }
+.auth-msg {
+  font-size: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  margin-top: 10px;
+  display: none;
+}
+.auth-msg.ok { display: block; background: var(--green-dim); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.auth-msg.err { display: block; background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+
+/* ═══════════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════════ */
+#page-app {
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 60px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-left { display: flex; align-items: center; gap: 16px; }
+.topbar-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.topbar-logo-icon {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--gold), #C8942A);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 16px var(--gold-glow);
+}
+.topbar-logo-icon svg { width: 18px; height: 18px; fill: none; stroke: #0A0C10; stroke-width: 2.5; }
+.topbar-logo-name { font-size: 16px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+.topbar-logo-sub { font-size: 10px; color: var(--text3); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.wallet-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: var(--sans);
+  letter-spacing: 0.3px;
+}
+.wallet-btn:hover { border-color: var(--gold); color: var(--gold); }
+.wallet-btn.connected { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+.wallet-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+.wallet-dot.connected { background: var(--green); box-shadow: 0 0 8px rgba(16,185,129,0.5); }
+.notif-btn {
+  position: relative;
+  width: 36px; height: 36px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.notif-btn:hover { border-color: var(--border2); background: var(--bg4); }
+.notif-btn svg { width: 16px; height: 16px; fill: none; stroke: var(--text2); stroke-width: 2; }
+.notif-badge {
+  position: absolute;
+  top: -2px; right: -2px;
+  width: 14px; height: 14px;
+  background: var(--red);
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--bg2);
+}
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px 5px 5px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.user-chip:hover { border-color: var(--border2); background: var(--bg4); }
+.user-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), #C8942A);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; color: #0A0C10;
+}
+.user-chip-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.user-chip-role { font-size: 10px; color: var(--text3); text-transform: capitalize; }
+.btn-logout {
+  padding: 7px 14px;
+  background: transparent;
+  border: 1px solid rgba(239,68,68,0.3);
+  color: var(--red);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--sans);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.3px;
+}
+.btn-logout:hover { background: var(--red-dim); border-color: var(--red); }
+
+/* ── APP LAYOUT ── */
+.app-layout {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 60px);
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  flex-shrink: 0;
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+.sidebar-section { margin-bottom: 8px; }
+.sidebar-section-label {
+  padding: 0 20px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 4px;
+  margin-top: 16px;
+}
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+  position: relative;
+}
+.sidebar-item:hover { color: var(--text); background: var(--bg3); }
+.sidebar-item.active {
+  color: var(--gold);
+  background: var(--gold-dim);
+  border-left-color: var(--gold);
+  font-weight: 700;
+}
+.sidebar-icon { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; flex-shrink: 0; }
+.sidebar-badge {
+  margin-left: auto;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: var(--red);
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ── MAIN CONTENT ── */
+.main-content {
+  flex: 1;
+  padding: 28px;
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  margin-bottom: 28px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.page-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+.page-subtitle {
+  font-size: 13px;
+  color: var(--text2);
+  margin-top: 3px;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-decoration: none;
+}
+.btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.2; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold), #C8942A);
+  color: #0A0C10;
+  box-shadow: 0 2px 12px var(--gold-glow);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--gold-glow); }
+.btn-secondary {
+  background: var(--bg3);
+  color: var(--text2);
+  border: 1px solid var(--border2);
+}
+.btn-secondary:hover { background: var(--bg4); color: var(--text); border-color: var(--border2); }
+.btn-success { background: var(--green-dim); color: var(--green); border: 1px solid rgba(16,185,129,0.25); }
+.btn-success:hover { background: rgba(16,185,129,0.2); }
+.btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+.btn-danger:hover { background: rgba(239,68,68,0.2); }
+.btn-warning { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
+.btn-warning:hover { background: rgba(245,158,11,0.2); }
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--border2); color: var(--text); }
+.btn-sm { padding: 6px 12px; font-size: 11px; }
+.btn-xs { padding: 4px 9px; font-size: 10px; }
+
+/* ── STATS GRID ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.stat-card:hover { border-color: var(--border2); }
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  opacity: 0.08;
+  transform: translate(20px, -20px);
+}
+.stat-card.gold::before { background: var(--gold); }
+.stat-card.blue::before { background: var(--blue); }
+.stat-card.green::before { background: var(--green); }
+.stat-card.red::before { background: var(--red); }
+.stat-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px;
+}
+.stat-icon svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+.stat-icon.gold { background: var(--gold-dim); color: var(--gold); }
+.stat-icon.blue { background: var(--blue-dim); color: var(--blue2); }
+.stat-icon.green { background: var(--green-dim); color: var(--green); }
+.stat-icon.red { background: var(--red-dim); color: var(--red); }
+.stat-label { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+.stat-val { font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -1px; line-height: 1; }
+.stat-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+.stat-change { font-size: 11px; margin-top: 6px; font-weight: 600; }
+.stat-change.up { color: var(--green); }
+.stat-change.down { color: var(--red); }
+
+/* ── SECTION ── */
+.section { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 20px; overflow: hidden; }
+.section-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--border); }
+.section-title { font-size: 14px; font-weight: 800; color: var(--text); letter-spacing: -0.2px; }
+.section-body { padding: 18px 22px; }
+.section-actions { display: flex; align-items: center; gap: 8px; }
+
+/* ── BADGES ── */
+.badge {
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.badge-locked { background: var(--blue-dim); color: var(--blue2); }
+.badge-active { background: var(--green-dim); color: var(--green); }
+.badge-disputed { background: var(--red-dim); color: var(--red); }
+.badge-complete { background: rgba(16,185,129,0.1); color: var(--green); }
+.badge-pending { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+
+/* ── CONTRACT ROWS ── */
+.contract-list { display: flex; flex-direction: column; gap: 10px; }
+.contract-row {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.contract-row:hover { border-color: var(--border2); }
+.contract-row.open { border-color: var(--gold); background: var(--bg2); box-shadow: 0 0 0 1px var(--gold-dim); }
+.cr-top { display: flex; align-items: center; justify-content: space-between; }
+.cr-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.cr-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 6px;
+  font-family: var(--mono);
+}
+.cr-meta span { display: flex; align-items: center; gap: 4px; }
+.progress-bar { height: 3px; background: var(--bg4); border-radius: 2px; overflow: hidden; margin-top: 10px; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold2)); border-radius: 2px; transition: width 0.5s ease; }
+.cr-detail { border-top: 1px solid var(--border); margin-top: 14px; padding-top: 14px; }
+
+/* ── MILESTONE GRID ── */
+.ms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.ms-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+.ms-name { font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+.ms-amt { font-size: 16px; font-weight: 800; color: var(--text); font-family: var(--mono); }
+.ms-status { font-size: 11px; margin-top: 4px; font-weight: 600; }
+.ms-done { color: var(--green); }
+.ms-active { color: var(--gold); }
+.ms-pending { color: var(--text3); }
+
+/* ── TIMER ── */
+.timer-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--amber-dim);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+.timer-label { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--amber); }
+.timer-count { font-family: var(--mono); font-size: 20px; font-weight: 500; color: var(--amber); letter-spacing: 2px; }
+
+/* ── AI SCORE ── */
+.ai-box {
+  background: var(--purple-dim);
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.ai-title { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--purple); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+.ai-title::before { content: '◆'; font-size: 8px; }
+.ai-scores { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ai-score { text-align: center; }
+.ai-score-val { font-size: 22px; font-weight: 800; color: var(--text); font-family: var(--mono); }
+.ai-score-lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; font-weight: 600; }
+
+/* ── JURY ── */
+.jury-box {
+  background: var(--red-dim);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.jury-title { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--red); margin-bottom: 10px; }
+.jury-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-weight: 600;
+  background: var(--bg3);
+}
+.chip-c { background: var(--blue-dim); color: var(--blue2); border-color: rgba(59,130,246,0.2); }
+.chip-f { background: var(--green-dim); color: var(--green); border-color: rgba(16,185,129,0.2); }
+
+/* ── TIMELINE ── */
+.timeline { display: flex; flex-direction: column; margin-bottom: 14px; }
+.tl-row { display: flex; gap: 12px; }
+.tl-col { display: flex; flex-direction: column; align-items: center; width: 18px; }
+.tl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.tl-dot-done { background: var(--green); box-shadow: 0 0 8px rgba(16,185,129,0.4); }
+.tl-dot-active { background: var(--gold); box-shadow: 0 0 8px var(--gold-glow); }
+.tl-dot-pending { background: transparent; border: 2px solid var(--border2); }
+.tl-line { width: 1px; flex: 1; background: var(--border2); margin: 2px 0; }
+.tl-body { padding-bottom: 14px; flex: 1; }
+.tl-lbl { font-size: 12px; font-weight: 700; color: var(--text); }
+.tl-desc { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.tl-time { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-top: 2px; }
+
+/* ── ACT ROW ── */
+.act-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* ── PARTIAL SLIDER ── */
+.slider-wrap { margin: 12px 0; }
+.slider-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); margin-bottom: 6px; }
+.slider-labels strong { color: var(--text); font-family: var(--mono); }
+input[type=range] {
+  width: 100%;
+  height: 4px;
+  -webkit-appearance: none;
+  background: var(--bg4);
+  border-radius: 2px;
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* ── FORM ── */
+.form-section { max-width: 560px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.field { margin-bottom: 16px; }
+.field-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text3); margin-bottom: 7px; }
+.field-input, .field-select, .field-textarea {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 11px 14px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+.field-input:focus, .field-select:focus, .field-textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-dim);
+}
+.field-input::placeholder { color: var(--text3); }
+.field-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='%235A6478' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 36px; }
+.field-select option { background: var(--bg2); }
+.field-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+.msg-box { font-size: 12px; padding: 10px 14px; border-radius: var(--radius); margin-top: 10px; display: none; font-weight: 500; }
+.msg-box.ok { display: block; background: var(--green-dim); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.msg-box.err { display: block; background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+.msg-box.info { display: block; background: var(--blue-dim); color: var(--blue2); border: 1px solid rgba(59,130,246,0.2); }
+
+/* ── NFT GRID ── */
+.nft-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.nft-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.nft-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+.nft-card::after {
+  content: 'NFT';
+  position: absolute;
+  top: 12px; right: 14px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--gold);
+  opacity: 0.6;
+  border: 1px solid var(--gold-dim);
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+.nft-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--bg4), var(--bg));
+  border: 2px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800; color: var(--gold);
+  margin-bottom: 12px;
+}
+.nft-name { font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 2px; }
+.nft-proj { font-size: 11px; color: var(--text3); margin-bottom: 6px; }
+.nft-rating { color: var(--gold); font-size: 12px; letter-spacing: 1px; }
+.nft-tag { display: inline-block; margin-top: 8px; padding: 3px 9px; background: var(--gold-dim); color: var(--gold); border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+.nft-hash { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-top: 8px; }
+
+/* ── PROFILE ── */
+.profile-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  max-width: 520px;
+}
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 22px;
+}
+.profile-avatar {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), #C8942A);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; color: #0A0C10;
+  box-shadow: 0 4px 20px var(--gold-glow);
+}
+.profile-name { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+.profile-meta { font-size: 12px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+.profile-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 22px; }
+.profile-stat { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; text-align: center; }
+.profile-stat-val { font-size: 22px; font-weight: 800; color: var(--gold); font-family: var(--mono); }
+.profile-stat-lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-top: 3px; }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text3);
+}
+.empty-state-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.4; }
+.empty-state-title { font-size: 14px; font-weight: 700; color: var(--text2); margin-bottom: 6px; }
+.empty-state-desc { font-size: 12px; line-height: 1.6; }
+
+/* ── DASHBOARD ACTIVITY FEED ── */
+.activity-feed { display: flex; flex-direction: column; gap: 0; }
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+.activity-text { flex: 1; }
+.activity-title { font-size: 12px; font-weight: 600; color: var(--text); }
+.activity-time { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-top: 2px; }
+
+/* ── NOTIFICATION PANEL ── */
+.notif-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 200;
+  display: none;
+}
+.notif-overlay.open { display: block; }
+.notif-panel {
+  position: fixed;
+  top: 64px; right: 20px;
+  width: 320px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  z-index: 201;
+}
+.notif-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+.notif-title { font-size: 13px; font-weight: 800; color: var(--text); }
+.notif-close { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 16px; line-height: 1; padding: 2px; }
+.notif-list { padding: 8px 0; max-height: 300px; overflow-y: auto; }
+.notif-item { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+.notif-item:hover { background: var(--bg3); }
+.notif-item:last-child { border-bottom: none; }
+.notif-item-title { font-size: 12px; font-weight: 600; color: var(--text); }
+.notif-item-desc { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.notif-item-unread { border-left: 2px solid var(--gold); }
+
+/* ── FLASH TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  z-index: 999;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 320px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── LOADING SHIMMER ── */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, var(--bg3) 25%, var(--bg4) 37%, var(--bg3) 63%);
+  background-size: 400px 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 4px;
+}
+
+/* ── GRID HELPERS ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .auth-left { display: none; }
+  .auth-right { width: 100%; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .nft-grid { grid-template-columns: repeat(2, 1fr); }
+  .ms-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .sidebar { width: 48px; }
+  .sidebar-item span { display: none; }
+  .sidebar-section-label { display: none; }
+  .main-content { padding: 16px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .nft-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.3s ease forwards; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ AUTH PAGE ═══════════════════════════════ -->
+<div id="page-auth" class="page active">
+  <div class="auth-shell">
+    <div class="auth-left">
+      <div class="auth-brand">
+        <div class="auth-logo">
+          <div class="auth-logo-icon">
+            <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          </div>
+          <div>
+            <div class="auth-logo-name">TrustChain</div>
+            <div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;font-weight:600;">Decentralized Escrow</div>
+          </div>
+        </div>
+        <div class="auth-hero-title">
+          The future of<br><span>trustless</span><br>freelancing.
+        </div>
+        <div class="auth-hero-desc">
+          Smart contract-powered escrow that protects both clients and freelancers. Milestone-based payments, AI-verified work, and decentralized dispute resolution — all on-chain.
+        </div>
+        <div class="auth-features">
+          <div class="auth-feat"><div class="auth-feat-dot"></div>ETH locked in smart contract until work is approved</div>
+          <div class="auth-feat"><div class="auth-feat-dot"></div>AI quality & plagiarism scoring on every submission</div>
+          <div class="auth-feat"><div class="auth-feat-dot"></div>Decentralized jury for fair dispute resolution</div>
+          <div class="auth-feat"><div class="auth-feat-dot"></div>On-chain Reputation NFTs — portable & unforgeable</div>
+          <div class="auth-feat"><div class="auth-feat-dot"></div>Auto-release timer for idle client protection</div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-tab-row">
+        <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</div>
+        <div class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create Account</div>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div class="auth-form active" id="form-login">
+        <div class="auth-heading">Welcome back</div>
+        <div class="auth-subheading">Sign in to your TrustChain account to manage contracts and payments.</div>
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input type="email" class="form-input" id="login-email" placeholder="you@example.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="login-pass" placeholder="••••••••" autocomplete="current-password"/>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:-8px;margin-bottom:8px">
+          <span style="font-size:11px;color:var(--gold);cursor:pointer;font-weight:600;" onclick="showToast('Password reset link sent to your email.','gold')">Forgot password?</span>
+        </div>
+        <button class="btn-auth" onclick="doLogin()">Sign in to dashboard</button>
+        <div class="auth-msg" id="login-msg"></div>
+        <div class="auth-divider">Or demo accounts</div>
+        <div class="demo-accounts">
+          <div class="demo-row" onclick="quickLogin('alice@tc.com')">
+            <div class="demo-info">
+              <div class="demo-avatar">AC</div>
+              <div>
+                <div class="demo-name">Alice Chen</div>
+                <div style="font-size:10px;color:var(--text3);">alice@tc.com · pass: demo</div>
+              </div>
+            </div>
+            <span class="demo-role-badge client">Client</span>
+          </div>
+          <div class="demo-row" onclick="quickLogin('bob@tc.com')">
+            <div class="demo-info">
+              <div class="demo-avatar">BK</div>
+              <div>
+                <div class="demo-name">Bob Kumar</div>
+                <div style="font-size:10px;color:var(--text3);">bob@tc.com · pass: demo</div>
+              </div>
+            </div>
+            <span class="demo-role-badge freelancer">Freelancer</span>
+          </div>
+          <div class="demo-row" onclick="quickLogin('sara@tc.com')">
+            <div class="demo-info">
+              <div class="demo-avatar">SP</div>
+              <div>
+                <div class="demo-name">Sara Patel</div>
+                <div style="font-size:10px;color:var(--text3);">sara@tc.com · pass: demo</div>
+              </div>
+            </div>
+            <span class="demo-role-badge freelancer">Freelancer</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIGNUP FORM -->
+      <div class="auth-form" id="form-signup">
+        <div class="auth-heading">Join TrustChain</div>
+        <div class="auth-subheading">Create your account and start working with secure, trustless contracts today.</div>
+        <div class="form-group">
+          <label class="form-label">Full name</label>
+          <input type="text" class="form-input" id="reg-name" placeholder="Your full name"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input type="email" class="form-input" id="reg-email" placeholder="you@example.com"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="reg-pass" placeholder="Min. 8 characters"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">I am joining as</label>
+          <div class="role-grid">
+            <div class="role-card active" id="role-client" onclick="setRegRole('client')">
+              <div class="role-card-icon">🏢</div>
+              <div class="role-card-name">Client</div>
+              <div class="role-card-desc">Hire & pay for work</div>
+            </div>
+            <div class="role-card" id="role-freelancer" onclick="setRegRole('freelancer')">
+              <div class="role-card-icon">⚡</div>
+              <div class="role-card-name">Freelancer</div>
+              <div class="role-card-desc">Get paid for work</div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-auth" onclick="doRegister()">Create my account</button>
+        <div class="auth-msg" id="reg-msg"></div>
+        <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:16px;line-height:1.6">
+          By creating an account you agree to TrustChain's<br><span style="color:var(--gold);cursor:pointer;">Terms of Service</span> and <span style="color:var(--gold);cursor:pointer;">Privacy Policy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ APP PAGE ═══════════════════════════════ -->
+<div id="page-app" class="page">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">
+        <div class="topbar-logo-icon">
+          <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        </div>
+        <div>
+          <div class="topbar-logo-name">TrustChain</div>
+          <div class="topbar-logo-sub">Decentralized Escrow</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="wallet-btn" id="wallet-btn" onclick="toggleWallet()">
+        <div class="wallet-dot" id="wallet-dot"></div>
+        <span id="wallet-label">Connect MetaMask</span>
+      </button>
+      <div class="notif-btn" onclick="toggleNotifs()">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="notif-badge" id="notif-count">3</div>
+      </div>
+      <div class="user-chip" onclick="setView('profile')">
+        <div class="user-avatar" id="user-avatar">AC</div>
+        <div>
+          <div class="user-chip-name" id="user-name-top">Alice Chen</div>
+          <div class="user-chip-role" id="user-role-top">Client</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Overview</div>
+        <div class="sidebar-item active" id="sbi-dashboard" onclick="setView('dashboard')">
+          <svg class="sidebar-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span>Dashboard</span>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Work</div>
+        <div class="sidebar-item" id="sbi-contracts" onclick="setView('contracts')">
+          <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Contracts</span>
+        </div>
+        <div class="sidebar-item" id="sbi-create" onclick="setView('create')">
+          <svg class="sidebar-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          <span>Post a Job</span>
+        </div>
+        <div class="sidebar-item" id="sbi-disputes" onclick="setView('disputes')">
+          <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Disputes</span>
+          <span class="sidebar-badge" id="dispute-badge" style="display:none">1</span>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Identity</div>
+        <div class="sidebar-item" id="sbi-reputation" onclick="setView('reputation')">
+          <svg class="sidebar-icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span>Reputation NFTs</span>
+        </div>
+        <div class="sidebar-item" id="sbi-profile" onclick="setView('profile')">
+          <svg class="sidebar-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Profile</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content" id="main-content"></div>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS PANEL -->
+<div class="notif-overlay" id="notif-overlay" onclick="closeNotifs()">
+  <div class="notif-panel" onclick="event.stopPropagation()">
+    <div class="notif-header">
+      <div class="notif-title">Notifications</div>
+      <button class="notif-close" onclick="closeNotifs()">✕</button>
+    </div>
+    <div class="notif-list" id="notif-list"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-dot" id="toast-dot"></div>
+  <span id="toast-text"></span>
+</div>
+
+<script>
+'use strict';
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+var currentUser = null;
+var walletConnected = false;
+var selectedContract = null;
+var regRole = 'client';
+var timers = {};
+var toastTimeout = null;
+
+// ── DATA ───────────────────────────────────────────────────────────────────
+var users = [
+  { email: 'alice@tc.com', pass: 'demo', name: 'Alice Chen', role: 'client', wallet: '0x8b2F...4c03', initials: 'AC', eth: '4.2' },
+  { email: 'bob@tc.com', pass: 'demo', name: 'Bob Kumar', role: 'freelancer', wallet: '0x3f4A...9a91', initials: 'BK', eth: '2.8' },
+  { email: 'sara@tc.com', pass: 'demo', name: 'Sara Patel', role: 'freelancer', wallet: '0x9c3D...2d12', initials: 'SP', eth: '1.5' }
+];
+
+var contracts = [
+  {
+    id: 1, title: 'Full-stack Web Application', client: 'Alice Chen', freelancer: 'Bob Kumar',
+    freelancerWallet: '0x3f4A...9a91', amount: 1.5, status: 'active', progress: 66,
+    autoReleaseHours: 48, autoReleaseLeft: 43 * 3600 + 22 * 60 + 10,
+    milestones: [
+      { name: 'UI Design', amt: 0.4, status: 'done' },
+      { name: 'Backend API', amt: 0.6, status: 'active' },
+      { name: 'Testing & QA', amt: 0.5, status: 'pending' }
+    ],
+    aiScore: { quality: 88, plagiarism: 2, completion: 91 },
+    timeline: [
+      { label: 'Contract created', desc: '1.5 ETH deposited to escrow', time: 'Apr 10', done: true },
+      { label: 'Freelancer accepted', desc: 'Work officially started', time: 'Apr 11', done: true },
+      { label: 'Milestone 1 approved', desc: 'UI design delivered & approved', time: 'Apr 12', done: true },
+      { label: 'Milestone 2 in review', desc: 'API submitted for review', time: 'Apr 13', done: false, active: true },
+      { label: 'Final approval & release', desc: 'Pending all milestones', time: '', done: false }
+    ]
+  },
+  {
+    id: 2, title: 'Smart Contract Security Audit', client: 'Alice Chen', freelancer: 'Sara Patel',
+    freelancerWallet: '0x9c3D...2d12', amount: 0.8, status: 'locked', progress: 0,
+    autoReleaseHours: 72, autoReleaseLeft: 71 * 3600 + 55 * 60,
+    milestones: [
+      { name: 'Code Review', amt: 0.4, status: 'pending' },
+      { name: 'Audit Report', amt: 0.4, status: 'pending' }
+    ],
+    aiScore: null,
+    timeline: [
+      { label: 'Contract created', desc: '0.8 ETH locked in escrow', time: 'Apr 13', done: true },
+      { label: 'Awaiting freelancer', desc: 'Sara has not yet accepted', time: '', done: false, active: true },
+      { label: 'Work begins', desc: '', time: '', done: false },
+      { label: 'Payment released', desc: '', time: '', done: false }
+    ]
+  },
+  {
+    id: 3, title: 'Logo & Brand Identity Kit', client: 'Alice Chen', freelancer: 'Bob Kumar',
+    freelancerWallet: '0x3f4A...9a91', amount: 0.4, status: 'disputed', progress: 50,
+    autoReleaseHours: 0, autoReleaseLeft: 0,
+    milestones: [
+      { name: 'Concepts', amt: 0.2, status: 'done' },
+      { name: 'Final Files', amt: 0.2, status: 'pending' }
+    ],
+    aiScore: { quality: 61, plagiarism: 15, completion: 54 },
+    partialPct: 60,
+    timeline: [
+      { label: 'Contract created', desc: '0.4 ETH locked', time: 'Apr 5', done: true },
+      { label: 'Work submitted', desc: 'Partial delivery received', time: 'Apr 9', done: true },
+      { label: 'Dispute raised', desc: 'Client reported incomplete work', time: 'Apr 11', done: true },
+      { label: 'Jury voting in progress', desc: '3 of 5 jurors have voted', time: 'Ongoing', done: false, active: true }
+    ],
+    juryVotes: [
+      { label: 'Juror 1', side: 'freelancer' },
+      { label: 'Juror 2', side: 'client' },
+      { label: 'Juror 3', side: 'freelancer' },
+      { label: 'Juror 4', side: null },
+      { label: 'Juror 5', side: null }
+    ]
+  },
+  {
+    id: 4, title: 'SEO Content Package (5 Articles)', client: 'Alice Chen', freelancer: 'Sara Patel',
+    freelancerWallet: '0x9c3D...2d12', amount: 0.5, status: 'complete', progress: 100,
+    autoReleaseHours: 0, autoReleaseLeft: 0,
+    milestones: [
+      { name: 'Articles 1–2', amt: 0.2, status: 'done' },
+      { name: 'Articles 3–5', amt: 0.3, status: 'done' }
+    ],
+    aiScore: { quality: 94, plagiarism: 1, completion: 100 },
+    timeline: [
+      { label: 'Contract created', desc: '0.5 ETH locked', time: 'Mar 28', done: true },
+      { label: 'Work submitted', desc: 'All 5 articles delivered', time: 'Apr 2', done: true },
+      { label: 'Client approved', desc: 'Excellent quality confirmed', time: 'Apr 3', done: true },
+      { label: '0.5 ETH released', desc: 'Payment complete', time: 'Apr 3', done: true }
+    ]
+  }
+];
+
+var nfts = [
+  { owner: 'Sara Patel', initials: 'SP', project: 'SEO Content Package', rating: 5, type: 'Content Writing', hash: '0xNFT...a3f9' },
+  { owner: 'Bob Kumar', initials: 'BK', project: 'React Dashboard', rating: 4.5, type: 'Frontend Dev', hash: '0xNFT...b2e4' },
+  { owner: 'Bob Kumar', initials: 'BK', project: 'REST API Integration', rating: 5, type: 'Backend Dev', hash: '0xNFT...c1d7' }
+];
+
+var notifications = [
+  { id: 1, title: 'Milestone approved', desc: 'Alice approved your UI Design milestone', time: '2h ago', read: false },
+  { id: 2, title: 'Dispute vote cast', desc: 'Juror 3 voted on Logo & Brand Identity', time: '4h ago', read: false },
+  { id: 3, title: 'New contract offer', desc: 'Smart Contract Audit awaiting your acceptance', time: '1d ago', read: false },
+  { id: 4, title: 'Auto-release in 24h', desc: 'Full-stack Web App timer expiring soon', time: '2d ago', read: true }
+];
+
+// ── AUTH ───────────────────────────────────────────────────────────────────
+function switchAuthTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('form-login').classList.toggle('active', tab === 'login');
+  document.getElementById('form-signup').classList.toggle('active', tab === 'signup');
+  clearAuthMsg();
+}
+
+function clearAuthMsg() {
+  ['login-msg', 'reg-msg'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) { el.className = 'auth-msg'; el.textContent = ''; }
+  });
+}
+
+function setAuthMsg(id, text, type) {
+  var el = document.getElementById(id);
+  el.className = 'auth-msg ' + type;
+  el.textContent = text;
+}
+
+function doLogin() {
+  var e = document.getElementById('login-email').value.trim();
+  var p = document.getElementById('login-pass').value;
+  var u = users.find(function(x) { return x.email === e; });
+  if (!u || u.pass !== p) { setAuthMsg('login-msg', 'Invalid email or password. Try a demo account below.', 'err'); return; }
+  loginAs(u);
+}
+
+function quickLogin(email) {
+  var u = users.find(function(x) { return x.email === email; });
+  if (u) loginAs(u);
+}
+
+function loginAs(u) {
+  currentUser = u;
+  document.getElementById('user-avatar').textContent = u.initials;
+  document.getElementById('user-name-top').textContent = u.name;
+  document.getElementById('user-role-top').textContent = u.role.charAt(0).toUpperCase() + u.role.slice(1);
+  showPage('app');
+  setView('dashboard');
+  updateDisputeBadge();
+}
+
+function doLogout() {
+  currentUser = null;
+  walletConnected = false;
+  selectedContract = null;
+  Object.values(timers).forEach(clearInterval);
+  timers = {};
+  document.getElementById('wallet-btn').className = 'wallet-btn';
+  document.getElementById('wallet-dot').className = 'wallet-dot';
+  document.getElementById('wallet-label').textContent = 'Connect MetaMask';
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-pass').value = '';
+  clearAuthMsg();
+  showPage('auth');
+}
+
+function setRegRole(r) {
+  regRole = r;
+  document.getElementById('role-client').classList.toggle('active', r === 'client');
+  document.getElementById('role-freelancer').classList.toggle('active', r === 'freelancer');
+}
+
+function doRegister() {
+  var n = document.getElementById('reg-name').value.trim();
+  var e = document.getElementById('reg-email').value.trim();
+  var p = document.getElementById('reg-pass').value;
+  if (!n || !e || !p) { setAuthMsg('reg-msg', 'Please fill in all fields.', 'err'); return; }
+  if (p.length < 8) { setAuthMsg('reg-msg', 'Password must be at least 8 characters.', 'err'); return; }
+  if (users.find(function(x) { return x.email === e; })) { setAuthMsg('reg-msg', 'This email is already registered.', 'err'); return; }
+  var init = n.split(' ').map(function(x) { return x[0]; }).join('').toUpperCase().slice(0, 2);
+  var wallet = '0x' + Math.random().toString(16).slice(2, 6) + '...' + Math.random().toString(16).slice(2, 6);
+  var u = { email: e, pass: p, name: n, role: regRole, wallet: wallet, initials: init, eth: '0.0' };
+  users.push(u);
+  setAuthMsg('reg-msg', '🎉 Account created! Signing you in...', 'ok');
+  setTimeout(function() { loginAs(u); }, 900);
+}
+
+// ── PAGE ───────────────────────────────────────────────────────────────────
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(function(el) { el.classList.remove('active'); });
+  document.getElementById('page-' + p).classList.add('active');
+}
+
+// ── WALLET ─────────────────────────────────────────────────────────────────
+function toggleWallet() {
+  walletConnected = !walletConnected;
+  var btn = document.getElementById('wallet-btn');
+  var dot = document.getElementById('wallet-dot');
+  var lbl = document.getElementById('wallet-label');
+  if (walletConnected) {
+    btn.classList.add('connected');
+    dot.classList.add('connected');
+    lbl.textContent = currentUser ? currentUser.wallet : '0x...';
+    showToast('MetaMask connected on Polygon Testnet', 'green');
+  } else {
+    btn.classList.remove('connected');
+    dot.classList.remove('connected');
+    lbl.textContent = 'Connect MetaMask';
+    showToast('Wallet disconnected', 'red');
+  }
+}
+
+// ── NOTIFICATIONS ──────────────────────────────────────────────────────────
+function toggleNotifs() {
+  var overlay = document.getElementById('notif-overlay');
+  var isOpen = overlay.classList.contains('open');
+  if (isOpen) { closeNotifs(); } else {
+    renderNotifs();
+    overlay.classList.add('open');
+  }
+}
+function closeNotifs() { document.getElementById('notif-overlay').classList.remove('open'); }
+function renderNotifs() {
+  var h = '';
+  notifications.forEach(function(n) {
+    h += '<div class="notif-item' + (n.read ? '' : ' notif-item-unread') + '" onclick="markRead(' + n.id + ')">';
+    h += '<div class="notif-item-title">' + n.title + '</div>';
+    h += '<div class="notif-item-desc">' + n.desc + ' · <span style="color:var(--text3)">' + n.time + '</span></div>';
+    h += '</div>';
+  });
+  document.getElementById('notif-list').innerHTML = h;
+}
+function markRead(id) {
+  var n = notifications.find(function(x) { return x.id === id; });
+  if (n) n.read = true;
+  var unread = notifications.filter(function(x) { return !x.read; }).length;
+  document.getElementById('notif-count').textContent = unread || '';
+  document.getElementById('notif-count').style.display = unread ? '' : 'none';
+  renderNotifs();
+}
+
+function updateDisputeBadge() {
+  if (!currentUser) return;
+  var d = contracts.filter(function(c) { return c.status === 'disputed' && (c.client === currentUser.name || c.freelancer === currentUser.name); }).length;
+  var badge = document.getElementById('dispute-badge');
+  badge.textContent = d;
+  badge.style.display = d ? '' : 'none';
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────────
+function showToast(text, color) {
+  var el = document.getElementById('toast');
+  var dot = document.getElementById('toast-dot');
+  var colors = { gold: 'var(--gold)', green: 'var(--green)', red: 'var(--red)', blue: 'var(--blue2)', purple: 'var(--purple)' };
+  dot.style.background = colors[color] || colors.gold;
+  document.getElementById('toast-text').textContent = text;
+  el.classList.add('show');
+  if (toastTimeout) clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(function() { el.classList.remove('show'); }, 3000);
+}
+
+// ── VIEWS ──────────────────────────────────────────────────────────────────
+function setView(v) {
+  document.querySelectorAll('.sidebar-item').forEach(function(el) { el.classList.remove('active'); });
+  var s = document.getElementById('sbi-' + v);
+  if (s) s.classList.add('active');
+  var mc = document.getElementById('main-content');
+  mc.classList.remove('fade-in');
+  void mc.offsetWidth;
+  mc.classList.add('fade-in');
+  var renders = {
+    dashboard: renderDashboard,
+    contracts: renderContracts,
+    create: renderCreate,
+    disputes: renderDisputes,
+    reputation: renderReputation,
+    profile: renderProfile
+  };
+  if (renders[v]) mc.innerHTML = renders[v]();
+  startTimers();
+}
+
+function fmtTime(secs) {
+  var h = Math.floor(secs / 3600);
+  var m = Math.floor((secs % 3600) / 60);
+  var s = secs % 60;
+  return (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+}
+
+function startTimers() {
+  Object.values(timers).forEach(clearInterval);
+  timers = {};
+  contracts.forEach(function(c) {
+    if (c.autoReleaseLeft > 0 && c.status !== 'complete' && c.status !== 'disputed') {
+      timers[c.id] = setInterval(function() {
+        c.autoReleaseLeft = Math.max(0, c.autoReleaseLeft - 1);
+        var el = document.getElementById('timer-' + c.id);
+        if (el) el.textContent = fmtTime(c.autoReleaseLeft);
+        if (c.autoReleaseLeft === 0) { clearInterval(timers[c.id]); c.status = 'complete'; c.progress = 100; }
+      }, 1000);
+    }
+  });
+}
+
+// ── DASHBOARD ──────────────────────────────────────────────────────────────
+function renderDashboard() {
+  var myC = contracts.filter(function(c) { return c.client === currentUser.name || c.freelancer === currentUser.name; });
+  var locked = myC.filter(function(c) { return c.status !== 'complete'; }).reduce(function(a, c) { return a + c.amount; }, 0);
+  var active = myC.filter(function(c) { return c.status === 'active'; }).length;
+  var disputed = myC.filter(function(c) { return c.status === 'disputed'; }).length;
+  var complete = myC.filter(function(c) { return c.status === 'complete'; }).length;
+  var earned = myC.filter(function(c) { return c.status === 'complete' && c.freelancer === currentUser.name; }).reduce(function(a, c) { return a + c.amount; }, 0);
+
+  var h = '<div class="page-header"><div><div class="page-title">Dashboard</div><div class="page-subtitle">Welcome back, ' + currentUser.name + ' — here\'s your overview</div></div>';
+  h += '<button class="btn btn-primary" onclick="setView(\'create\')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Post New Job</button></div>';
+
+  h += '<div class="stats-grid">';
+  h += '<div class="stat-card gold"><div class="stat-icon gold"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div><div class="stat-label">ETH in Escrow</div><div class="stat-val">' + locked.toFixed(2) + '</div><div class="stat-sub">ETH locked</div></div>';
+  h += '<div class="stat-card blue"><div class="stat-icon blue"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="stat-label">Active</div><div class="stat-val">' + active + '</div><div class="stat-sub">contracts running</div></div>';
+  h += '<div class="stat-card green"><div class="stat-icon green"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="stat-label">Completed</div><div class="stat-val">' + complete + '</div><div class="stat-sub">projects done</div></div>';
+  h += '<div class="stat-card red"><div class="stat-icon red"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg></div><div class="stat-label">Disputes</div><div class="stat-val">' + disputed + '</div><div class="stat-sub">open cases</div></div>';
+  h += '</div>';
+
+  h += '<div class="grid-2">';
+  h += '<div class="section"><div class="section-header"><div class="section-title">Recent Contracts</div><button class="btn btn-ghost btn-sm" onclick="setView(\'contracts\')">View all →</button></div><div class="section-body"><div class="contract-list">';
+  myC.slice(0, 3).forEach(function(c) { h += renderContractRow(c); });
+  h += '</div></div></div>';
+
+  h += '<div class="section"><div class="section-header"><div class="section-title">Activity Feed</div></div><div class="section-body"><div class="activity-feed">';
+  var activities = [
+    { icon: '✅', bg: 'var(--green-dim)', title: 'Milestone 1 released', time: 'Apr 12 · 2:14 PM' },
+    { icon: '⚡', bg: 'var(--gold-dim)', title: 'Bob accepted job offer', time: 'Apr 11 · 9:02 AM' },
+    { icon: '🔒', bg: 'var(--blue-dim)', title: '0.8 ETH locked for audit', time: 'Apr 13 · 11:30 AM' },
+    { icon: '⚠️', bg: 'var(--red-dim)', title: 'Dispute raised on branding kit', time: 'Apr 11 · 4:45 PM' }
+  ];
+  activities.forEach(function(a) {
+    h += '<div class="activity-item"><div class="activity-icon" style="background:' + a.bg + '">' + a.icon + '</div><div class="activity-text"><div class="activity-title">' + a.title + '</div><div class="activity-time">' + a.time + '</div></div></div>';
+  });
+  h += '</div></div></div></div>';
+
+  if (!walletConnected) {
+    h += '<div class="msg-box info" style="display:block;margin-top:16px">🔗 Connect your MetaMask wallet to interact with smart contracts on Polygon Testnet.</div>';
+  }
+  return h;
+}
+
+// ── CONTRACTS ──────────────────────────────────────────────────────────────
+function renderContracts() {
+  var myC = contracts.filter(function(c) { return c.client === currentUser.name || c.freelancer === currentUser.name; });
+  var h = '<div class="page-header"><div><div class="page-title">Contracts</div><div class="page-subtitle">' + myC.length + ' contracts in your account</div></div>';
+  h += '<button class="btn btn-primary" onclick="setView(\'create\')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Post New Job</button></div>';
+  h += '<div class="contract-list">';
+  if (!myC.length) {
+    h += '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">No contracts yet</div><div class="empty-state-desc">Post your first job to get started</div></div>';
+  }
+  myC.forEach(function(c) { h += renderContractRow(c); });
+  h += '</div>';
+  return h;
+}
+
+function renderContractRow(c) {
+  var isOpen = selectedContract === c.id;
+  var h = '<div class="contract-row' + (isOpen ? ' open' : '') + '" onclick="toggleContract(' + c.id + ')">';
+  h += '<div class="cr-top"><span class="cr-title">' + c.title + '</span><span class="badge badge-' + c.status + '">' + c.status + '</span></div>';
+  h += '<div class="cr-meta"><span>⬡ ' + c.amount + ' ETH</span><span>👤 ' + c.client + '</span><span>⚡ ' + c.freelancer + '</span></div>';
+  if (c.progress > 0) {
+    h += '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:8px"><span>PROGRESS</span><span style="color:var(--gold);font-weight:700">' + c.progress + '%</span></div>';
+    h += '<div class="progress-bar"><div class="progress-fill" style="width:' + c.progress + '%"></div></div>';
+  }
+  if (isOpen) h += renderContractDetail(c);
+  h += '</div>';
+  return h;
+}
+
+function renderContractDetail(c) {
+  var h = '<div class="cr-detail">';
+  h += '<div style="font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Milestones</div>';
+  h += '<div class="ms-grid">';
+  c.milestones.forEach(function(m) {
+    h += '<div class="ms-card"><div class="ms-name">' + m.name + '</div><div class="ms-amt">' + m.amt.toFixed(2) + ' <span style="font-size:10px;color:var(--text3)">ETH</span></div>';
+    h += '<div class="ms-status ' + (m.status === 'done' ? 'ms-done' : m.status === 'active' ? 'ms-active' : 'ms-pending') + '">';
+    h += m.status === 'done' ? '✓ Released' : m.status === 'active' ? '● In progress' : '○ Pending';
+    h += '</div></div>';
+  });
+  h += '</div>';
+
+  if (c.autoReleaseLeft > 0 && c.status !== 'complete') {
+    h += '<div class="timer-box"><div><div class="timer-label">⏱ Auto-release timer</div><div style="font-size:10px;color:var(--amber);margin-top:2px">Funds release if client is silent</div></div><div class="timer-count" id="timer-' + c.id + '">' + fmtTime(c.autoReleaseLeft) + '</div></div>';
+  }
+
+  if (c.aiScore) {
+    h += '<div class="ai-box"><div class="ai-title">AI Work Verification</div><div class="ai-scores">';
+    h += '<div class="ai-score"><div class="ai-score-val">' + c.aiScore.quality + '%</div><div class="ai-score-lbl">Quality</div></div>';
+    h += '<div class="ai-score"><div class="ai-score-val" style="color:' + (c.aiScore.plagiarism > 10 ? 'var(--red)' : 'var(--text)') + '">' + c.aiScore.plagiarism + '%</div><div class="ai-score-lbl">Plagiarism</div></div>';
+    h += '<div class="ai-score"><div class="ai-score-val">' + c.aiScore.completion + '%</div><div class="ai-score-lbl">Completion</div></div>';
+    h += '</div></div>';
+  }
+
+  if (c.status === 'disputed' && c.juryVotes) {
+    h += '<div class="jury-box"><div class="jury-title">⚖️ Decentralized Jury</div>';
+    h += '<div class="jury-chips">';
+    c.juryVotes.forEach(function(v) {
+      h += '<span class="chip' + (v.side === 'client' ? ' chip-c' : v.side === 'freelancer' ? ' chip-f' : '') + '">';
+      h += v.label + (v.side ? ': ' + v.side : ': pending') + '</span>';
+    });
+    h += '</div>';
+    if (typeof c.partialPct !== 'undefined') {
+      h += '<div style="margin-top:12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--red);margin-bottom:8px">Partial Payment Proposal</div>';
+      h += '<div class="slider-wrap"><div class="slider-labels"><span>Freelancer: <strong id="pval-' + c.id + '">' + c.partialPct + '%</strong></span><span>Client refund: <strong id="pval2-' + c.id + '">' + (100 - c.partialPct) + '%</strong></span></div>';
+      h += '<input type="range" min="0" max="100" value="' + c.partialPct + '" step="5" oninput="updatePartial(' + c.id + ',this.value)"/></div>';
+      h += '<div class="act-row">';
+      h += '<button class="btn btn-sm btn-success" onclick="event.stopPropagation();resolveDispute(' + c.id + ',\'partial\')">Apply Split</button>';
+      h += '<button class="btn btn-sm btn-warning" onclick="event.stopPropagation();resolveDispute(' + c.id + ',\'freelancer\')">Full → Freelancer</button>';
+      h += '<button class="btn btn-sm btn-danger" onclick="event.stopPropagation();resolveDispute(' + c.id + ',\'client\')">Full → Client</button>';
+      h += '</div></div>';
+    }
+    h += '</div>';
+  }
+
+  h += '<div style="font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin:14px 0 10px">Timeline</div>';
+  h += '<div class="timeline">';
+  c.timeline.forEach(function(s, i) {
+    h += '<div class="tl-row"><div class="tl-col"><div class="tl-dot ' + (s.done ? 'tl-dot-done' : s.active ? 'tl-dot-active' : 'tl-dot-pending') + '"></div>' + (i < c.timeline.length - 1 ? '<div class="tl-line"></div>' : '') + '</div>';
+    h += '<div class="tl-body"><div class="tl-lbl">' + s.label + '</div>' + (s.desc ? '<div class="tl-desc">' + s.desc + '</div>' : '') + (s.time ? '<div class="tl-time">' + s.time + '</div>' : '') + '</div></div>';
+  });
+  h += '</div>';
+
+  h += '<div class="act-row">';
+  if (c.status === 'active') {
+    if (currentUser.role === 'client') {
+      h += '<button class="btn btn-sm btn-success" onclick="event.stopPropagation();approveWork(' + c.id + ')">✓ Approve Milestone</button>';
+      h += '<button class="btn btn-sm btn-danger" onclick="event.stopPropagation();raiseDispute(' + c.id + ')">⚠ Raise Dispute</button>';
+    } else {
+      h += '<button class="btn btn-sm btn-primary" onclick="event.stopPropagation();submitWork(' + c.id + ')">↑ Submit Work</button>';
+    }
+  } else if (c.status === 'locked' && currentUser.role === 'freelancer') {
+    h += '<button class="btn btn-sm btn-primary" onclick="event.stopPropagation();acceptJob(' + c.id + ')">⚡ Accept Job</button>';
+  }
+  h += '</div></div>';
+  return h;
+}
+
+function toggleContract(id) {
+  selectedContract = selectedContract === id ? null : id;
+  setView('contracts');
+}
+
+function approveWork(id) {
+  var c = contracts.find(function(x) { return x.id === id; });
+  if (!c) return;
+  var ai = c.milestones.findIndex(function(m) { return m.status === 'active'; });
+  if (ai > -1) {
+    c.milestones[ai].status = 'done';
+    var ni = c.milestones.findIndex(function(m) { return m.status === 'pending'; });
+    if (ni > -1) c.milestones[ni].status = 'active';
+    c.progress = Math.round(c.milestones.filter(function(m) { return m.status === 'done'; }).length / c.milestones.length * 100);
+    if (c.progress === 100) { c.status = 'complete'; c.autoReleaseLeft = 0; showToast('Payment released! Contract complete.', 'green'); }
+    else showToast('Milestone approved. Next milestone unlocked.', 'gold');
+  }
+  setView('contracts');
+}
+
+function raiseDispute(id) {
+  var c = contracts.find(function(x) { return x.id === id; });
+  if (c) {
+    c.status = 'disputed';
+    c.juryVotes = [{label:'Juror 1',side:null},{label:'Juror 2',side:null},{label:'Juror 3',side:null},{label:'Juror 4',side:null},{label:'Juror 5',side:null}];
+    c.partialPct = 50;
+    c.autoReleaseLeft = 0;
+    showToast('Dispute raised. 5 jurors will be assigned.', 'red');
+    updateDisputeBadge();
+  }
+  setView('contracts');
+}
+
+function submitWork(id) {
+  var c = contracts.find(function(x) { return x.id === id; });
+  if (c && c.status === 'locked') { c.status = 'active'; c.milestones[0].status = 'active'; }
+  if (c) c.aiScore = { quality: Math.floor(70 + Math.random() * 25), plagiarism: Math.floor(Math.random() * 8), completion: Math.floor(75 + Math.random() * 20) };
+  showToast('Work submitted. AI verification running...', 'purple');
+  setView('contracts');
+}
+
+function acceptJob(id) {
+  var c = contracts.find(function(x) { return x.id === id; });
+  if (c) {
+    c.status = 'active';
+    c.milestones[0].status = 'active';
+    c.timeline[1].done = true; c.timeline[1].active = false; c.timeline[1].time = 'Now';
+    if (c.timeline[2]) c.timeline[2].active = true;
+    showToast('Job accepted! Work can now begin.', 'gold');
+  }
+  setView('contracts');
+}
+
+function updatePartial(id, val) {
+  var c = contracts.find(function(x) { return x.id === id; });
+  if (c) c.partialPct = parseInt(val);
+  var el = document.getElementById('pval-' + id); if (el) el.textContent = val + '%';
+  var el2 = document.getElementById('pval2-' + id); if (el2) el2.textContent = (100 - parseInt(val)) + '%';
+}
+
+function resolveDispute(id, to) {
+  var c = contracts.find(function(x) { return x.id === id; });
+  if (!c) return;
+  c.status = 'complete'; c.progress = 100; c.autoReleaseLeft = 0;
+  nfts.push({ owner: c.freelancer, initials: c.freelancer.split(' ').map(function(x) { return x[0]; }).join(''), project: c.title, rating: to === 'client' ? 3 : 4, type: 'Design', hash: '0xNFT...' + Math.random().toString(16).slice(2, 6) });
+  showToast('Dispute resolved. NFT reputation badge minted.', 'green');
+  updateDisputeBadge();
+  setView('contracts');
+}
+
+// ── CREATE JOB ─────────────────────────────────────────────────────────────
+function renderCreate() {
+  var h = '<div class="page-header"><div><div class="page-title">Post a Job</div><div class="page-subtitle">Lock ETH in a smart contract and hire a freelancer</div></div></div>';
+  h += '<div class="section form-section"><div class="section-header"><div class="section-title">Contract Details</div></div><div class="section-body">';
+  h += '<div class="field"><label class="field-label">Job Title</label><input type="text" class="field-input" id="f-title" placeholder="e.g. Build a landing page"/></div>';
+  h += '<div class="field"><label class="field-label">Freelancer Wallet Address</label><input type="text" class="field-input" id="f-addr" placeholder="0x... or known username"/></div>';
+  h += '<div class="form-row">';
+  h += '<div class="field"><label class="field-label">Total Amount (ETH)</label><input type="number" class="field-input" id="f-amt" placeholder="1.0" step="0.1" min="0.01"/></div>';
+  h += '<div class="field"><label class="field-label">Payment Type</label><select class="field-select" id="f-type"><option value="milestone">Milestone-based</option><option value="full">Full on completion</option></select></div>';
+  h += '</div>';
+  h += '<div class="form-row">';
+  h += '<div class="field"><label class="field-label">Number of Milestones</label><select class="field-select" id="f-ms"><option value="2">2 milestones</option><option value="3">3 milestones</option><option value="4">4 milestones</option><option value="5">5 milestones</option></select></div>';
+  h += '<div class="field"><label class="field-label">Auto-release Timer</label><select class="field-select" id="f-auto"><option value="48">48 hours</option><option value="72">72 hours</option><option value="168">7 days</option><option value="0">Disabled</option></select></div>';
+  h += '</div>';
+  h += '<div class="form-row">';
+  h += '<div class="field"><label class="field-label">Project Deadline</label><input type="date" class="field-input" id="f-deadline"/></div>';
+  h += '<div class="field"><label class="field-label">Category</label><select class="field-select" id="f-cat"><option>Development</option><option>Design</option><option>Content Writing</option><option>Smart Contract Audit</option><option>Marketing</option><option>Other</option></select></div>';
+  h += '</div>';
+  h += '<div class="field"><label class="field-label">Project Description</label><textarea class="field-textarea" id="f-desc" rows="4" placeholder="Describe the scope of work, deliverables, and requirements..."></textarea></div>';
+  h += '<div style="margin-top:8px;display:flex;gap:10px">';
+  h += '<button class="btn btn-primary" onclick="createJob()"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Lock Funds in Smart Contract</button>';
+  h += '<button class="btn btn-ghost" onclick="setView(\'contracts\')">Cancel</button>';
+  h += '</div><div class="msg-box" id="create-msg"></div></div></div>';
+  return h;
+}
+
+function createJob() {
+  var title = document.getElementById('f-title').value.trim();
+  var addr = document.getElementById('f-addr').value.trim();
+  var amt = parseFloat(document.getElementById('f-amt').value);
+  var msCnt = parseInt(document.getElementById('f-ms').value);
+  var autoH = parseInt(document.getElementById('f-auto').value);
+  var desc = document.getElementById('f-desc').value.trim();
+  if (!title || !addr || !amt || amt <= 0) {
+    var m = document.getElementById('create-msg'); m.className = 'msg-box err'; m.textContent = 'Please fill in all required fields.';
+    return;
+  }
+  var msArr = [];
+  for (var i = 0; i < msCnt; i++) msArr.push({ name: 'Milestone ' + (i + 1), amt: parseFloat((amt / msCnt).toFixed(3)), status: 'pending' });
+  var newC = {
+    id: Date.now(), title: title, client: currentUser.name,
+    freelancer: addr.length > 8 ? addr.slice(0, 6) + '...' : addr,
+    freelancerWallet: addr, amount: amt, status: 'locked', progress: 0,
+    autoReleaseHours: autoH, autoReleaseLeft: autoH * 3600,
+    milestones: msArr, aiScore: null,
+    timeline: [
+      { label: 'Contract created', desc: amt.toFixed(2) + ' ETH deposited to escrow', time: 'Just now', done: true },
+      { label: 'Awaiting freelancer', desc: 'Waiting for acceptance', time: 'Pending', done: false, active: true }
+    ]
+  };
+  contracts.unshift(newC);
+  var m = document.getElementById('create-msg'); m.className = 'msg-box ok'; m.textContent = '✓ Contract created! ' + amt.toFixed(2) + ' ETH locked in smart contract.';
+  showToast(amt.toFixed(2) + ' ETH locked. Contract deployed!', 'gold');
+  setTimeout(function() { setView('contracts'); }, 1400);
+}
+
+// ── DISPUTES ───────────────────────────────────────────────────────────────
+function renderDisputes() {
+  var disputed = contracts.filter(function(c) { return c.status === 'disputed'; });
+  var h = '<div class="page-header"><div><div class="page-title">Disputes</div><div class="page-subtitle">Active arbitration cases with decentralized jury voting</div></div></div>';
+  if (!disputed.length) {
+    return h + '<div class="section"><div class="section-body"><div class="empty-state"><div class="empty-state-icon">⚖️</div><div class="empty-state-title">No open disputes</div><div class="empty-state-desc">All contracts are running smoothly</div></div></div></div>';
+  }
+  disputed.forEach(function(c) {
+    h += '<div class="section" style="margin-bottom:20px"><div class="section-header">';
+    h += '<div><div class="section-title">' + c.title + '</div><div style="font-size:11px;color:var(--text3);margin-top:2px;font-family:var(--mono)">' + c.amount + ' ETH · ' + c.client + ' vs ' + c.freelancer + '</div></div>';
+    h += '<span class="badge badge-disputed">disputed</span></div>';
+    h += '<div class="section-body">';
+
+    if (c.aiScore) {
+      h += '<div class="ai-box"><div class="ai-title">AI Verdict Analysis</div><div class="ai-scores">';
+      h += '<div class="ai-score"><div class="ai-score-val">' + c.aiScore.quality + '%</div><div class="ai-score-lbl">Quality</div></div>';
+      h += '<div class="ai-score"><div class="ai-score-val" style="color:' + (c.aiScore.plagiarism > 10 ? 'var(--red)' : 'var(--text)') + '">' + c.aiScore.plagiarism + '%</div><div class="ai-score-lbl">Plagiarism</div></div>';
+      h += '<div class="ai-score"><div class="ai-score-val">' + c.aiScore.completion + '%</div><div class="ai-score-lbl">Completion</div></div>';
+      h += '</div></div>';
+    }
+
+    if (c.juryVotes) {
+      h += '<div class="jury-box"><div class="jury-title">⚖️ Jury Votes (' + c.juryVotes.filter(function(v) { return v.side; }).length + '/5 cast)</div>';
+      h += '<div class="jury-chips">';
+      c.juryVotes.forEach(function(v) {
+        h += '<span class="chip' + (v.side === 'client' ? ' chip-c' : v.side === 'freelancer' ? ' chip-f' : '') + '">' + v.label + ': ' + (v.side || 'pending') + '</span>';
+      });
+      h += '</div>';
+      h += '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">';
+      h += '<button class="btn btn-sm" style="background:var(--green-dim);color:var(--green);border:1px solid rgba(16,185,129,0.2)" onclick="castJuryVote(' + c.id + ',\'freelancer\')">Vote: Freelancer</button>';
+      h += '<button class="btn btn-sm" style="background:var(--blue-dim);color:var(--blue2);border:1px solid rgba(59,130,246,0.2)" onclick="castJuryVote(' + c.id + ',\'client\')">Vote: Client</button>';
+      h += '</div></div>';
+    }
+
+    if (typeof c.partialPct !== 'undefined') {
+      h += '<div style="margin-top:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin-bottom:10px">Arbitration Resolution</div>';
+      h += '<div class="slider-wrap"><div class="slider-labels"><span>Freelancer: <strong id="pval-' + c.id + '">' + c.partialPct + '%</strong></span><span>Client: <strong id="pval2-' + c.id + '">' + (100 - c.partialPct) + '%</strong></span></div>';
+      h += '<input type="range" min="0" max="100" value="' + c.partialPct + '" step="5" oninput="updatePartial(' + c.id + ',this.value)"/></div>';
+      h += '<div class="act-row">';
+      h += '<button class="btn btn-success" onclick="resolveDispute(' + c.id + ',\'partial\')">Apply Partial Split</button>';
+      h += '<button class="btn btn-warning" onclick="resolveDispute(' + c.id + ',\'freelancer\')">All → Freelancer</button>';
+      h += '<button class="btn btn-danger" onclick="resolveDispute(' + c.id + ',\'client\')">Full Refund → Client</button>';
+      h += '</div></div>';
+    }
+    h += '</div></div>';
+  });
+  return h;
+}
+
+function castJuryVote(id, side) {
+  var c = contracts.find(function(x) { return x.id === id; });
+  if (!c || !c.juryVotes) return;
+  var empty = c.juryVotes.find(function(v) { return !v.side; });
+  if (empty) empty.side = side;
+  var fVotes = c.juryVotes.filter(function(v) { return v.side === 'freelancer'; }).length;
+  var cVotes = c.juryVotes.filter(function(v) { return v.side === 'client'; }).length;
+  showToast('Vote recorded: ' + side, side === 'freelancer' ? 'green' : 'blue');
+  if (fVotes >= 3 || cVotes >= 3) {
+    setTimeout(function() { resolveDispute(id, fVotes >= 3 ? 'freelancer' : 'client'); }, 500);
+    return;
+  }
+  setView('disputes');
+}
+
+// ── REPUTATION ─────────────────────────────────────────────────────────────
+function renderReputation() {
+  var h = '<div class="page-header"><div><div class="page-title">Reputation NFTs</div><div class="page-subtitle">Earned after each completed project — unforgeable & portable on-chain</div></div></div>';
+  h += '<div class="section" style="margin-bottom:20px"><div class="section-header"><div class="section-title">What are Reputation NFTs?</div></div><div class="section-body">';
+  h += '<div style="font-size:13px;color:var(--text2);line-height:1.7">Each completed project mints a soulbound NFT to the freelancer\'s wallet. These tokens store your verified work history, ratings, and specializations permanently on-chain — your credentials that can never be falsified or deleted. Clients can verify your real track record before hiring.</div></div></div>';
+  h += '<div class="nft-grid">';
+  nfts.forEach(function(n) {
+    var stars = '';
+    for (var i = 0; i < 5; i++) stars += i < Math.floor(n.rating) ? '★' : (i < n.rating ? '½' : '☆');
+    h += '<div class="nft-card">';
+    h += '<div class="nft-avatar">' + n.initials + '</div>';
+    h += '<div class="nft-name">' + n.owner + '</div>';
+    h += '<div class="nft-proj">' + n.project + '</div>';
+    h += '<div class="nft-rating">' + stars + ' <span style="font-size:11px;color:var(--text3)">' + n.rating.toFixed(1) + '</span></div>';
+    h += '<div><span class="nft-tag">' + n.type + '</span></div>';
+    h += '<div class="nft-hash">' + n.hash + '</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+// ── PROFILE ────────────────────────────────────────────────────────────────
+function renderProfile() {
+  var u = currentUser;
+  var myC = contracts.filter(function(c) { return c.client === u.name || c.freelancer === u.name; });
+  var done = myC.filter(function(c) { return c.status === 'complete'; }).length;
+  var earned = myC.filter(function(c) { return c.status === 'complete' && c.freelancer === u.name; }).reduce(function(a, c) { return a + c.amount; }, 0);
+  var myNFTs = nfts.filter(function(n) { return n.owner === u.name; }).length;
+
+  var h = '<div class="page-header"><div><div class="page-title">Profile</div><div class="page-subtitle">Manage your account and settings</div></div></div>';
+  h += '<div class="profile-card">';
+  h += '<div class="profile-header">';
+  h += '<div class="profile-avatar">' + u.initials + '</div>';
+  h += '<div><div class="profile-name">' + u.name + '</div>';
+  h += '<div class="profile-meta">' + u.role.charAt(0).toUpperCase() + u.role.slice(1) + ' · ' + u.email + '</div>';
+  h += '<div class="profile-meta" style="margin-top:4px">' + u.wallet + '</div></div></div>';
+  h += '<div class="profile-stats">';
+  h += '<div class="profile-stat"><div class="profile-stat-val">' + done + '</div><div class="profile-stat-lbl">Completed</div></div>';
+  h += '<div class="profile-stat"><div class="profile-stat-val">' + u.eth + '</div><div class="profile-stat-lbl">ETH Balance</div></div>';
+  h += '<div class="profile-stat"><div class="profile-stat-val">' + myNFTs + '</div><div class="profile-stat-lbl">Rep. NFTs</div></div>';
+  h += '</div>';
+  h += '<div style="font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:14px">Account Settings</div>';
+  h += '<div class="field"><label class="field-label">Display Name</label><input type="text" class="field-input" id="pf-name" value="' + u.name + '"/></div>';
+  h += '<div class="field"><label class="field-label">Email Address</label><input type="email" class="field-input" id="pf-email" value="' + u.email + '" readonly/></div>';
+  h += '<div class="field"><label class="field-label">Wallet Address</label><input type="text" class="field-input" id="pf-wallet" value="' + u.wallet + '"/></div>';
+  h += '<div class="field"><label class="field-label">Current Role</label><input type="text" class="field-input" value="' + u.role.charAt(0).toUpperCase() + u.role.slice(1) + '" readonly/></div>';
+  h += '<div style="display:flex;gap:10px;margin-top:8px">';
+  h += '<button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>';
+  h += '<button class="btn btn-danger" onclick="doLogout()">Sign Out</button>';
+  h += '</div><div class="msg-box" id="profile-msg"></div></div>';
+  return h;
+}
+
+function saveProfile() {
+  var n = document.getElementById('pf-name').value.trim();
+  var w = document.getElementById('pf-wallet').value.trim();
+  if (n) currentUser.name = n;
+  if (w) currentUser.wallet = w;
+  currentUser.initials = n.split(' ').map(function(x) { return x[0]; }).join('').toUpperCase().slice(0, 2);
+  document.getElementById('user-avatar').textContent = currentUser.initials;
+  document.getElementById('user-name-top').textContent = currentUser.name;
+  var m = document.getElementById('profile-msg'); m.className = 'msg-box ok'; m.textContent = '✓ Profile updated successfully.';
+  showToast('Profile saved', 'green');
+}
+</script>
+</body>
+</html>
