@@ -434,3 +434,75 @@ body {
   outline: none;
 }
 .form-input:focus { border-color: var(--gold); }
+
+/* ── PREMIUM CONTRACTS UI ── */
+.contract-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.contract-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 4px; height: 100%;
+  background: var(--gold);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.contract-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--gold-glow);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
+.contract-card:hover::before { opacity: 1; }
+
+.contract-meta {
+  display: flex;
+  gap: 24px;
+  padding: 14px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.meta-item { display: flex; align-items: center; gap: 8px; color: var(--text3); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.meta-item svg { color: var(--gold); }
+
+.ai-report {
+  background: rgba(232,184,75,0.03);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-top: 12px;
+}
+.ai-report-title { display: flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 800; color: var(--gold); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; }
+
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.score-card {
+  text-align: center;
+  padding: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.score-val { font-size: 18px; font-weight: 800; color: var(--text); font-family: var(--mono); }
+.score-label { font-size: 9px; color: var(--text3); text-transform: uppercase; margin-top: 4px; font-weight: 700; }
+
+.badge-glow {
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+.badge-active { background: var(--green-dim); color: var(--green); box-shadow: 0 0 10px rgba(16,185,129,0.15); }
+.badge-locked { background: var(--amber-dim); color: var(--amber); box-shadow: 0 0 10px rgba(245,158,11,0.15); }
+
+@keyframes shimmer { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+.shimmer { animation: shimmer 2s infinite ease-in-out; }
